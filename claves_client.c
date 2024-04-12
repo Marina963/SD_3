@@ -6,9 +6,11 @@
 
 #include "claves.h"
 
+//ESTAS FUNCIONES EN CLAVES.C
 int init(void) {
     CLIENT *clnt;
     int result_1;
+    enum clnt_stat retval_1;
 
     host = getenv("IP_TUPLAS");
     if (NULL == host) {
@@ -33,6 +35,7 @@ int init(void) {
 int get_value(int key, char *value1,  int * N_value2, double * V_value2) {
     CLIENT *clnt;
     int result_2;
+    enum clnt_stat retval_2;
     struct arg args;
 
     host = getenv("IP_TUPLAS");
@@ -55,7 +58,7 @@ int get_value(int key, char *value1,  int * N_value2, double * V_value2) {
     }
 
     retval_2 = get_value_1(args, &result2, clnt);
-    if (retval_1 != RPC_SUCCESS) {
+    if (retval_2 != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
     }
 
@@ -71,6 +74,7 @@ int get_value(int key, char *value1,  int * N_value2, double * V_value2) {
     return result_2;
 }
 
+// ESTO A CLIENTE.C
 int main (int argc, char *argv[])
 {
     char value1[256];

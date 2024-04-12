@@ -37,6 +37,7 @@ claves_1_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result)
 	/*
 	 * Insert additional freeing code here, if needed
 	 */
+    // rpcinfo-p localhost (la IP del pc)
 
 	return 1;
 }

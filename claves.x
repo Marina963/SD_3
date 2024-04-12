@@ -7,6 +7,7 @@ struct arg {
 
 program CLAVES{
     version CLAVESVER {
+        // CAMBIAR EL NOMBRE PARA QUE NO SE SOLAPE
         int init(void) = 1;
         int get_value(struct arg) = 2;
     } = 1;
