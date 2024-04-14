@@ -106,8 +106,7 @@ int set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
 	return 1;
 }
 
-int get_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp)
-{
+int get_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
     pthread_mutex_lock(&mutex);
     get_abs_path();
     *result = 0;

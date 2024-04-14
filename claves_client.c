@@ -60,19 +60,15 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
         clnt_pcreateerror (host);
         return -1;
     }
+    
     set_value_arg.key = key;
-    set_value_arg.value1 = value1;
-
-
-    printf("h\n");
-    printf("%i\n", N_value2 );
-    printf("%i\n", *set_value_arg.N_value2 );
-
-    *set_value_arg.N_value2 = N_value2;
-    printf("a\n");
+    strcpy(set_value_arg.value1, value1);
+    set_value_arg.N_value2 = &N_value2;
+    
     for (int i = 0; i < N_value2; i++){
         set_value_arg.V_value2[i] = V_value2[i];
     }
+    
     retval_set_value = set_value_x_1(set_value_arg, &result_set_value, clnt);
     if (retval_set_value != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
@@ -105,6 +101,12 @@ int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
     }
 
     get_value_arg.key = key;
+    strcpy(get_value_arg.value1, value1);
+    get_value_arg.N_value2 = N_value2;
+    
+    for (int i = 0; i < *N_value2; i++){
+        get_value_arg.V_value2[i] = V_value2[i];
+    }
 
     retval_get_value = get_value_x_1(get_value_arg, &result_get_value, clnt);
     if (retval_get_value != RPC_SUCCESS) {
@@ -237,5 +239,22 @@ int main (void ) {
     res = set_value(10, "prueba de cadena", N_value2, V_value2);
     printf("Set_value devuelve %d\n", res);
 
-    exit (0);
+	// Llamada a la función get_value
+    int N_value2_res;
+    double V_value2_res[32];
+    char Value1_res[256];
+
+    res = get_value(10, Value1_res, &N_value2_res , V_value2_res);
+    printf("Get_value devuelve %d\n", res);
+    printf("Value1 = %s\n", Value1_res);
+    printf("N_value2 = %i\n", N_value2_res);
+    printf("V_value2:\n");
+    for(int i = 0; i < N_value2_res; i++){
+        printf("%lf",V_value2_res[i]);
+        if (i < N_value2_res -1) printf(", ");
+        else printf("\n");
+    }
+
+
+    return 0;
 }
