@@ -1,6 +1,6 @@
 struct arg {
         int key;
-        string value1<256>;
+        char value1[256];
         int *N_value2;
         double V_value2[32];
 } ;

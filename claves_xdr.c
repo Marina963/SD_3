@@ -13,7 +13,8 @@ xdr_arg (XDR *xdrs, arg *objp)
 	int i;
 	 if (!xdr_int (xdrs, &objp->key))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->value1, 256))
+	 if (!xdr_vector (xdrs, (char *)objp->value1, 256,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	 if (!xdr_pointer (xdrs, (char **)&objp->N_value2, sizeof (int), (xdrproc_t) xdr_int))
 		 return FALSE;

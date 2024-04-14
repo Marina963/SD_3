@@ -17,7 +17,7 @@ extern "C" {
 
 struct arg {
 	int key;
-	char *value1;
+	char value1[256];
 	int *N_value2;
 	double V_value2[32];
 };
