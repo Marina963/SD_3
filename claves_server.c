@@ -2,32 +2,43 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
 
+const char *rel_path="./tuplas";
+char *abs_path = "";
 pthread_mutex_t mutex;
 
 void get_tuple_abs_path(char * tuple_name, int key) {
     //Función auxiliar que obtiene el path absoluto de una tupla
+
     strcpy(tuple_name, abs_path);
     strcat(tuple_name, "/");
     char key_str[32];
     sprintf(key_str, "%d", key);
     strcat(tuple_name, key_str);
 }
+void get_abs_path(void) {
+    if (strcmp(abs_path, "") == 0){
+        abs_path = realpath(rel_path, NULL);
+    }
+}
 
 int init_x_1_svc(int *result, struct svc_req *rqstp) {
-
     pthread_mutex_lock(&mutex);
-
     // Declaración de variables necesarias para el init
+    get_abs_path();
     DIR *dir = opendir(abs_path);
     struct dirent* tuplas;
     char* file_name;
     char res[4] = "0";
+
     *result = 0;
 
     // Mientras haya tuplas en el fichero de tuplas
     while ((tuplas = readdir(dir)) != NULL) {
-
         // Si el objeto no es un directorio
         if (strcmp(tuplas->d_name, ".") != 0 && strcmp(tuplas->d_name, "..") != 0) {
 
@@ -58,17 +69,17 @@ int init_x_1_svc(int *result, struct svc_req *rqstp) {
 int set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
 
     pthread_mutex_lock(&mutex);
-
+    get_abs_path();
     *result = 0;
 
     // Se obtiene el nombre absoluto del fichero
     char *tuple_name = calloc(PATH_MAX, sizeof(char));
-    get_tuple_abs_path(tuple_name, key);
+    get_tuple_abs_path(tuple_name, arg1.key);
 
     // Se mira si existe
     if (access(tuple_name, F_OK) == 0) {
         printf("Error: Archivo existe\n");
-        *result = -;
+        *result = -1;
         return 0;
     }
     // Crea el fichero
@@ -76,7 +87,7 @@ int set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
     tuple = fopen(tuple_name, "w+");
     if (tuple == NULL) {
         perror("");
-        *result = -;
+        *result = -1;
         return 0;
     }
 
@@ -98,12 +109,12 @@ int set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
 int get_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp)
 {
     pthread_mutex_lock(&mutex);
-
+    get_abs_path();
     *result = 0;
 
     // Se consigue el path de la tupla
     char *tuple_name = calloc(PATH_MAX, sizeof(char));
-    get_tuple_abs_path(tuple_name, key);
+    get_tuple_abs_path(tuple_name, arg1.key);
 
     // Se mira si existe
     if (access(tuple_name, F_OK) == -1) {
@@ -166,17 +177,17 @@ int get_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp)
 int modify_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
 
     pthread_mutex_lock(&mutex);
-
+    get_abs_path();
     *result = 0;
 
     // Se obtiene el nombre absoluto del fichero
     char *tuple_name = calloc(PATH_MAX, sizeof(char));
-    get_tuple_abs_path(tuple_name, key);
+    get_tuple_abs_path(tuple_name, arg1.key);
 
     // Se mira si existe
     if (access(tuple_name, F_OK) == 0) {
         printf("Error: Archivo existe\n");
-        *result = -;
+        *result = -1;
         return 0;
     }
     // Crea el fichero
@@ -184,7 +195,7 @@ int modify_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
     tuple = fopen(tuple_name, "w+");
     if (tuple == NULL) {
         perror("");
-        *result = -;
+        *result = -1;
         return 0;
     }
 
@@ -206,7 +217,7 @@ int modify_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp) {
 
 int delete_key_x_1_svc(int key, int *result,  struct svc_req *rqstp) {
     pthread_mutex_lock(&mutex);
-
+    get_abs_path();
     // Declaración de variables necesarias para el delete key
     DIR *dir = opendir(abs_path);
     struct dirent* tuplas;
@@ -254,13 +265,12 @@ int delete_key_x_1_svc(int key, int *result,  struct svc_req *rqstp) {
 int exist_x_1_svc(int key, int *result,  struct svc_req *rqstp) {
     pthread_mutex_lock(&mutex);
     *result = 0;
-
+    get_abs_path();
     // Datos para el fichero
     char *tuple_name = calloc(PATH_MAX, sizeof(char));
     get_tuple_abs_path(tuple_name, key);
 
     // Se mira si existe
-    res = access(tuple_name, F_OK);
     if (access(tuple_name, F_OK ) == 0) {
         *result = 1;
     } else {

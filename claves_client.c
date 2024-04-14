@@ -6,6 +6,7 @@
 
 #include "claves.h"
 #include <stdio.h>
+#include <string.h>
 
 int init(){
     CLIENT *clnt;
@@ -16,6 +17,7 @@ int init(){
 
     host = getenv("IP_TUPLAS");
     if(host == NULL){
+
         printf("Error \n");
         return -1;
     }
@@ -25,11 +27,11 @@ int init(){
         clnt_pcreateerror (host);
         return -1;
     }
-
     retval_init = init_x_1(&result_init, clnt);
     if (retval_init != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
     }
+
     clnt_destroy (clnt);
     return result_init;
 }
@@ -40,6 +42,7 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
     enum clnt_stat retval_set_value;
     int result_set_value;
     struct arg set_value_arg;
+    char *host;
 
     if (N_value2 > 32 || N_value2 <= 0) {
         printf("Error: N_value2 fuera de rango \n");
@@ -57,14 +60,14 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
         clnt_pcreateerror (host);
         return -1;
     }
-
     set_value_arg.key = key;
+    printf("h\n");
     strcpy(set_value_arg.value1, value1);
-    set_value_arg.N_value2 = N_value2;
+    printf("a\n");
+    *set_value_arg.N_value2 = N_value2;
     for (int i = 0; i < N_value2; i++){
         set_value_arg.V_value2[i] = V_value2[i];
     }
-
     retval_set_value = set_value_x_1(set_value_arg, &result_set_value, clnt);
     if (retval_set_value != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
@@ -90,7 +93,8 @@ int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
         return -1;
     }
 
-    cltn = clnt_create(host, CLAVES, CLAVESVER, "tcp") {
+    clnt = clnt_create(host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL){
         clnt_pcreateerror (host);
         return -1;
     }
@@ -103,7 +107,7 @@ int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
     }
 
     strcpy(value1, get_value_arg.value1);
-    *N_value2 = get_value_arg.N_value2;
+    *N_value2 = *get_value_arg.N_value2;
 
     for (int i = 0; i < *N_value2; i++) {
         V_value2[i] = get_value_arg.V_value2[i];
@@ -140,7 +144,7 @@ int modify_value(int key, char *value1, int N_value2, double *V_value2){
 
     modify_value_arg.key = key;
     strcpy(modify_value_arg.value1, value1);
-    modify_value_arg.N_value2 = N_value2;
+    *modify_value_arg.N_value2 = N_value2;
     for (int i = 0; i < N_value2; i++){
         modify_value_arg.V_value2[i] = V_value2[i];
     }
@@ -186,7 +190,7 @@ int delete_key(int key){
 }
 
 
-void exist(int key) {
+int exist(int key) {
 	CLIENT *clnt;
 
 	enum clnt_stat retval_exist;
@@ -218,6 +222,15 @@ void exist(int key) {
 
 
 int main (void ) {
-	claves_1 ();
+    int res = init();
+    printf("Init devuelve %d\n", res);
+
+    // Llamada a la función set_value
+    int N_value2 = 32;
+    double V_value2[N_value2];
+    for (int i = 0; i < N_value2; i++) {V_value2[i] = (double)i;}
+    res = set_value(10, "prueba de cadena", N_value2, V_value2);
+    printf("Set_value devuelve %d\n", res);
+
     exit (0);
 }
