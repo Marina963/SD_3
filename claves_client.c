@@ -61,10 +61,15 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
         return -1;
     }
     set_value_arg.key = key;
+    set_value_arg.value1 = value1;
+
+
     printf("h\n");
-    strcpy(set_value_arg.value1, value1);
-    printf("a\n");
+    printf("%i\n", N_value2 );
+    printf("%i\n", *set_value_arg.N_value2 );
+
     *set_value_arg.N_value2 = N_value2;
+    printf("a\n");
     for (int i = 0; i < N_value2; i++){
         set_value_arg.V_value2[i] = V_value2[i];
     }
