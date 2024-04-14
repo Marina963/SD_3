@@ -17,26 +17,58 @@
 #endif
 
 int
-_init_1 (void  *argp, void *result, struct svc_req *rqstp)
+_init_x_1 (void  *argp, void *result, struct svc_req *rqstp)
 {
-	return (init_1_svc(result, rqstp));
+	return (init_x_1_svc(result, rqstp));
 }
 
 int
-_get_value_1 (struct arg  *argp, void *result, struct svc_req *rqstp)
+_set_value_x_1 (struct arg  *argp, void *result, struct svc_req *rqstp)
 {
-	return (get_value_1_svc(*argp, result, rqstp));
+	return (set_value_x_1_svc(*argp, result, rqstp));
+}
+
+int
+_get_value_x_1 (struct arg  *argp, void *result, struct svc_req *rqstp)
+{
+	return (get_value_x_1_svc(*argp, result, rqstp));
+}
+
+int
+_modify_value_x_1 (struct arg  *argp, void *result, struct svc_req *rqstp)
+{
+	return (modify_value_x_1_svc(*argp, result, rqstp));
+}
+
+int
+_delete_key_x_1 (int  *argp, void *result, struct svc_req *rqstp)
+{
+	return (delete_key_x_1_svc(*argp, result, rqstp));
+}
+
+int
+_exist_x_1 (int  *argp, void *result, struct svc_req *rqstp)
+{
+	return (exist_x_1_svc(*argp, result, rqstp));
 }
 
 static void
 claves_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		struct arg get_value_1_arg;
+		struct arg set_value_x_1_arg;
+		struct arg get_value_x_1_arg;
+		struct arg modify_value_x_1_arg;
+		int delete_key_x_1_arg;
+		int exist_x_1_arg;
 	} argument;
 	union {
-		int init_1_res;
-		int get_value_1_res;
+		int init_x_1_res;
+		int set_value_x_1_res;
+		int get_value_x_1_res;
+		int modify_value_x_1_res;
+		int delete_key_x_1_res;
+		int exist_x_1_res;
 	} result;
 	bool_t retval;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -47,16 +79,40 @@ claves_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
 		return;
 
-	case init:
+	case init_x:
 		_xdr_argument = (xdrproc_t) xdr_void;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (bool_t (*) (char *, void *,  struct svc_req *))_init_1;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_init_x_1;
 		break;
 
-	case get_value:
+	case set_value_x:
 		_xdr_argument = (xdrproc_t) xdr_arg;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (bool_t (*) (char *, void *,  struct svc_req *))_get_value_1;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_set_value_x_1;
+		break;
+
+	case get_value_x:
+		_xdr_argument = (xdrproc_t) xdr_arg;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_get_value_x_1;
+		break;
+
+	case modify_value_x:
+		_xdr_argument = (xdrproc_t) xdr_arg;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_modify_value_x_1;
+		break;
+
+	case delete_key_x:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_delete_key_x_1;
+		break;
+
+	case exist_x:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (bool_t (*) (char *, void *,  struct svc_req *))_exist_x_1;
 		break;
 
 	default:

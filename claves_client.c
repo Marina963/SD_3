@@ -5,38 +5,84 @@
  */
 
 #include "claves.h"
+#include <stdio.h>
 
-//ESTAS FUNCIONES EN CLAVES.C
-int init(void) {
+int init(){
     CLIENT *clnt;
-    int result_1;
-    enum clnt_stat retval_1;
+
+    enum clnt_stat retval_init;
+    int result_init;
+    char *host;
 
     host = getenv("IP_TUPLAS");
-    if (NULL == host) {
-        printf("Error\n");
+    if(host == NULL){
+        printf("Error \n");
         return -1;
     }
 
-    cltn = clnt_create(host, CLAVES, CLAVESVER, "tcp") {
+    clnt = clnt_create (host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL) {
         clnt_pcreateerror (host);
-        exit (1);
+        return -1;
     }
 
-    retval_1 = init_1(&result_1, clnt);
-    if (retval_1 != RPC_SUCCESS) {
+    retval_init = init_x_1(&result_init, clnt);
+    if (retval_init != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
     }
-
     clnt_destroy (clnt);
-    return result_1;
+    return result_init;
 }
 
-int get_value(int key, char *value1,  int * N_value2, double * V_value2) {
+int set_value(int key, char *value1, int N_value2, double *V_value2){
     CLIENT *clnt;
-    int result_2;
-    enum clnt_stat retval_2;
-    struct arg args;
+
+    enum clnt_stat retval_set_value;
+    int result_set_value;
+    struct arg set_value_arg;
+
+    if (N_value2 > 32 || N_value2 <= 0) {
+        printf("Error: N_value2 fuera de rango \n");
+        return -1;
+    }
+
+    host = getenv("IP_TUPLAS");
+    if(host == NULL){
+        printf("Error \n");
+        return -1;
+    }
+
+    clnt = clnt_create (host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL) {
+        clnt_pcreateerror (host);
+        return -1;
+    }
+
+    set_value_arg.key = key;
+    strcpy(set_value_arg.value1, value1);
+    set_value_arg.N_value2 = N_value2;
+    for (int i = 0; i < N_value2; i++){
+        set_value_arg.V_value2[i] = V_value2[i];
+    }
+
+    retval_set_value = set_value_x_1(set_value_arg, &result_set_value, clnt);
+    if (retval_set_value != RPC_SUCCESS) {
+        clnt_perror (clnt, "call failed");
+    }
+
+
+    clnt_destroy (clnt);
+    return result_set_value;
+
+}
+
+int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
+    CLIENT *clnt;
+
+    int result_get_value;
+    enum clnt_stat retval_get_value;
+    struct arg get_value_arg;
+    char *host;
 
     host = getenv("IP_TUPLAS");
     if (NULL == host) {
@@ -46,42 +92,132 @@ int get_value(int key, char *value1,  int * N_value2, double * V_value2) {
 
     cltn = clnt_create(host, CLAVES, CLAVESVER, "tcp") {
         clnt_pcreateerror (host);
-        exit (1);
+        return -1;
     }
 
-    args.key = key;
-    strcpy(args.value1, value1);
-    args.N_value2 = *N_value2;
+    get_value_arg.key = key;
 
-    for (int i = 0; i < *N_value2) {
-        args.V_value2[i] = N_value2[i];
-    }
-
-    retval_2 = get_value_1(args, &result2, clnt);
-    if (retval_2 != RPC_SUCCESS) {
+    retval_get_value = get_value_x_1(get_value_arg, &result_get_value, clnt);
+    if (retval_get_value != RPC_SUCCESS) {
         clnt_perror (clnt, "call failed");
     }
 
-    clnt_destroy (clnt);
-
-    strcpy(value1, args.value1);
-    *N_value2 = args.N_value2;
+    strcpy(value1, get_value_arg.value1);
+    *N_value2 = get_value_arg.N_value2;
 
     for (int i = 0; i < *N_value2; i++) {
-        V_value2[i] = args.V_value2[i];
+        V_value2[i] = get_value_arg.V_value2[i];
     }
 
-    return result_2;
+    clnt_destroy (clnt);
+    return result_get_value;
 }
 
-// ESTO A CLIENTE.C
-int main (int argc, char *argv[])
-{
-    char value1[256];
-    int N_value2 = 2;
-    double V_value2[2]= {1.0, 2.0};
+int modify_value(int key, char *value1, int N_value2, double *V_value2){
+    CLIENT *clnt;
 
-    int result = get_value(0x123, value1, &N_value2, V_value2) ;
-	printf("result = %d\n", result);
-    return 0;
+    enum clnt_stat retval_modify_value;
+    int result_modify_value;
+    struct arg modify_value_arg;
+    char *host;
+
+    if (N_value2 > 32 || N_value2 <= 0) {
+        printf("Error: N_value2 fuera de rango \n");
+        return -1;
+    }
+
+    host = getenv("IP_TUPLAS");
+    if(host == NULL){
+        printf("Error \n");
+        return -1;
+    }
+
+    clnt = clnt_create (host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL) {
+        clnt_pcreateerror (host);
+        return -1;
+    }
+
+    modify_value_arg.key = key;
+    strcpy(modify_value_arg.value1, value1);
+    modify_value_arg.N_value2 = N_value2;
+    for (int i = 0; i < N_value2; i++){
+        modify_value_arg.V_value2[i] = V_value2[i];
+    }
+
+
+    retval_modify_value = modify_value_x_1(modify_value_arg, &result_modify_value, clnt);
+    if (retval_modify_value != RPC_SUCCESS) {
+        clnt_perror (clnt, "call failed");
+    }
+    clnt_destroy (clnt);
+    return  result_modify_value;
+
+}
+
+
+int delete_key(int key){
+    CLIENT *clnt;
+
+    enum clnt_stat retval_delete_key;
+    int result_delete_key;
+
+    char *host;
+
+    host = getenv("IP_TUPLAS");
+    if(host == NULL){
+        printf("Error \n");
+        return -1;
+    }
+
+    clnt = clnt_create (host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL) {
+        clnt_pcreateerror (host);
+        return -1;
+    }
+
+    retval_delete_key = delete_key_x_1(key, &result_delete_key, clnt);
+    if (retval_delete_key != RPC_SUCCESS) {
+        clnt_perror (clnt, "call failed");
+    }
+
+    clnt_destroy (clnt);
+    return result_delete_key;
+}
+
+
+void exist(int key) {
+	CLIENT *clnt;
+
+	enum clnt_stat retval_exist;
+	int result_exist;
+    char *host;
+
+    host = getenv("IP_TUPLAS");
+    if(host == NULL){
+        printf("Error \n");
+        return -1;
+    }
+
+    clnt = clnt_create (host, CLAVES, CLAVESVER, "tcp");
+    if (clnt == NULL) {
+        clnt_pcreateerror (host);
+        return -1;
+    }
+
+
+	retval_exist = exist_x_1(key, &result_exist, clnt);
+	if (retval_exist != RPC_SUCCESS) {
+		clnt_perror (clnt, "call failed");
+	}
+
+	clnt_destroy (clnt);
+    return result_exist;
+
+}
+
+
+int main (void ) {
+	claves_1 ();
+    exit (0);
 }

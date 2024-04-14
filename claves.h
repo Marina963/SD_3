@@ -27,21 +27,45 @@ typedef struct arg arg;
 #define CLAVESVER 1
 
 #if defined(__STDC__) || defined(__cplusplus)
-#define init 1
-extern  enum clnt_stat init_1(int *, CLIENT *);
-extern  bool_t init_1_svc(int *, struct svc_req *);
-#define get_value 2
-extern  enum clnt_stat get_value_1(struct arg , int *, CLIENT *);
-extern  bool_t get_value_1_svc(struct arg , int *, struct svc_req *);
+#define init_x 1
+extern  enum clnt_stat init_x_1(int *, CLIENT *);
+extern  bool_t init_x_1_svc(int *, struct svc_req *);
+#define set_value_x 2
+extern  enum clnt_stat set_value_x_1(struct arg , int *, CLIENT *);
+extern  bool_t set_value_x_1_svc(struct arg , int *, struct svc_req *);
+#define get_value_x 3
+extern  enum clnt_stat get_value_x_1(struct arg , int *, CLIENT *);
+extern  bool_t get_value_x_1_svc(struct arg , int *, struct svc_req *);
+#define modify_value_x 4
+extern  enum clnt_stat modify_value_x_1(struct arg , int *, CLIENT *);
+extern  bool_t modify_value_x_1_svc(struct arg , int *, struct svc_req *);
+#define delete_key_x 5
+extern  enum clnt_stat delete_key_x_1(int , int *, CLIENT *);
+extern  bool_t delete_key_x_1_svc(int , int *, struct svc_req *);
+#define exist_x 6
+extern  enum clnt_stat exist_x_1(int , int *, CLIENT *);
+extern  bool_t exist_x_1_svc(int , int *, struct svc_req *);
 extern int claves_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
-#define init 1
-extern  enum clnt_stat init_1();
-extern  bool_t init_1_svc();
-#define get_value 2
-extern  enum clnt_stat get_value_1();
-extern  bool_t get_value_1_svc();
+#define init_x 1
+extern  enum clnt_stat init_x_1();
+extern  bool_t init_x_1_svc();
+#define set_value_x 2
+extern  enum clnt_stat set_value_x_1();
+extern  bool_t set_value_x_1_svc();
+#define get_value_x 3
+extern  enum clnt_stat get_value_x_1();
+extern  bool_t get_value_x_1_svc();
+#define modify_value_x 4
+extern  enum clnt_stat modify_value_x_1();
+extern  bool_t modify_value_x_1_svc();
+#define delete_key_x 5
+extern  enum clnt_stat delete_key_x_1();
+extern  bool_t delete_key_x_1_svc();
+#define exist_x 6
+extern  enum clnt_stat exist_x_1();
+extern  bool_t exist_x_1_svc();
 extern int claves_1_freeresult ();
 #endif /* K&R C */
 
