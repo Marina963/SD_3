@@ -54,7 +54,8 @@ bool_t init_x_1_svc(int *result, struct svc_req *rqstp)
             if (remove(file_name) == -1) {
                 perror("");
                 *result = -1;
-                return 0;
+                pthread_mutex_unlock(&mutex);
+                return 1;
             }
 
             // Se libera el espacio dinámico
@@ -70,7 +71,6 @@ bool_t init_x_1_svc(int *result, struct svc_req *rqstp)
 
 bool_t set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp)
 {
-	
     pthread_mutex_lock(&mutex);
     get_abs_path();
     *result = 0;
@@ -83,17 +83,20 @@ bool_t set_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp)
     if (access(tuple_name, F_OK) == 0) {
         printf("Error: Archivo existe\n");
         *result = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
+    
     // Crea el fichero
     FILE * tuple;
     tuple = fopen(tuple_name, "w+");
     if (tuple == NULL) {
         perror("");
         *result = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
-
+	
     if (fprintf(tuple, "%d\n", arg1.key) < 0) {*result = -1;}
     if (fprintf(tuple, "%s\n", arg1.value1) < 0) {*result = -1;}
     if (fprintf(tuple, "%d\n", arg1.N_value2) < 0) {*result = -1;}
@@ -124,7 +127,8 @@ bool_t get_value_x_1_svc(int key, struct res *result,  struct svc_req *rqstp)
     if (access(tuple_name, F_OK) == -1) {
         printf("Error: Archivo no existe\n");
         result->error_code = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
 
     // Abre el archivo
@@ -133,9 +137,9 @@ bool_t get_value_x_1_svc(int key, struct res *result,  struct svc_req *rqstp)
     if (tuple == NULL) {
         perror("");
         result->error_code = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
-
 
     // Lee los datos
     int file_key;
@@ -147,20 +151,23 @@ bool_t get_value_x_1_svc(int key, struct res *result,  struct svc_req *rqstp)
     if (fscanf(tuple, "%[^\n]s\n", result->value1) < 1) {
         printf("Error: lectura de value1 de get_value\n");
         result->error_code = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
 
     // Lee N_value2 y lo manda por el socket
     if (fscanf(tuple, "%d\n", &result->N_value2) < 1) {
         printf("Error: lectura de N_value2 de get_value\n");
         result->error_code = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
 
     else if (result->N_value2 > 32 || result->N_value2 <= 0){
         printf("Error: N_value2 fuera de rango\n");
         result->error_code = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
 
 
@@ -192,7 +199,8 @@ bool_t modify_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp
     if (access(tuple_name, F_OK) == -1) {
         printf("Error: Archivo no existe\n");
         *result = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
     
     // Crea el fichero
@@ -201,7 +209,8 @@ bool_t modify_value_x_1_svc(struct arg arg1, int *result,  struct svc_req *rqstp
     if (tuple == NULL) {
         perror("");
         *result = -1;
-        return 0;
+        pthread_mutex_unlock(&mutex);
+        return 1;
     }
 
     if (fprintf(tuple, "%d\n", arg1.key) < 0) {*result = -1;}
@@ -251,7 +260,8 @@ bool_t delete_key_x_1_svc(int key, int *result,  struct svc_req *rqstp)
                 if (remove(file_name) == -1) {
                     perror("");
                     *result = -1;
-                    return 0;
+                    pthread_mutex_unlock(&mutex);
+                    return 1;
                 }
                 // Se libera el espacio dinámico
                 free(file_name);
@@ -261,7 +271,8 @@ bool_t delete_key_x_1_svc(int key, int *result,  struct svc_req *rqstp)
     else {
         printf("Error: el fichero no existe\n");
         *result = -1;
-        return  0;
+        pthread_mutex_unlock(&mutex);
+        return  1;
     }
 
     pthread_mutex_unlock(&mutex);
@@ -284,7 +295,8 @@ bool_t exist_x_1_svc(int key, int *result,  struct svc_req *rqstp) {
             *result = 0;
         } else {
             *result = -1;
-            return 0;
+            pthread_mutex_unlock(&mutex);
+            return 1;
         }
     }
     pthread_mutex_unlock(&mutex);

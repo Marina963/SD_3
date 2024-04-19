@@ -12,7 +12,7 @@ int print_files(char *abs_path) {
     struct dirent *tuplas;
     printf("En el directorio tuplas hay los siguientes archivos:  ");
     while ((tuplas = readdir(dir)) != NULL) {
-        printf("%s  ", tuplas->d_name);
+        printf("%s ", tuplas->d_name);
     }
     printf("\n");
     return 0;
@@ -40,8 +40,9 @@ int leer_fichero(char *abs_path, int k){
     }
 
     printf("El contenido del fichero es:\n");
+    
     // Lee y muestra cada caracter del archivo
-    char linea[100];
+    char linea[512];
 
     fgets(linea, sizeof(linea), archivo);
     printf("K: %s", linea);

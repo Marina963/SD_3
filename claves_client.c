@@ -39,7 +39,7 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
     struct arg set_value_arg;
     char *host;
 
-    if (N_value2 > 32 || N_value2 <= 0) {
+    if (N_value2 > 32 || N_value2 < 1) {
         printf("Error: N_value2 fuera de rango \n");
         return -1;
     }
@@ -69,10 +69,8 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
         clnt_perror (clnt, "call failed");
     }
 
-
     clnt_destroy (clnt);
     return result_set_value;
-
 }
 
 int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
