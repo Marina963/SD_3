@@ -75,7 +75,6 @@ int set_value(int key, char *value1, int N_value2, double *V_value2){
 
 int get_value(int key, char *value1,  int *N_value2, double * V_value2) {
     CLIENT *clnt;
-
     int result_get_value;
     enum clnt_stat retval_get_value;
     struct res get_value_res;
